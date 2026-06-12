@@ -1,9 +1,9 @@
 use rusqlite::{Connection, Result};
 
 pub fn conn(db_path: &str) -> Result<Connection> {
-    let conn = Connection::open(db_path).expect("Failed to open db");
+    let conn = Connection::open(db_path)?;
 
-    ensure_table(&conn).expect("Failed to ensure todos table exists");
+    ensure_table(&conn)?;
 
     Ok(conn)
 }
@@ -13,7 +13,7 @@ fn ensure_table(conn: &Connection) -> Result<usize> {
         "CREATE TABLE IF NOT EXISTS todos (
             id   INTEGER PRIMARY KEY,
             text TEXT NOT NULL,
-            done BOOLEAN
+            done BOOLEAN NOT NULL DEFAULT false
         )",
         (), // empty list of parameters.
     )

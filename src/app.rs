@@ -4,7 +4,6 @@ use rusqlite::{Connection, Result, params};
 use std::io::Write;
 
 pub struct App<W: Write> {
-    pub db_path: String,
     pub db: Connection,
     pub output: W,
 }
@@ -12,7 +11,6 @@ pub struct App<W: Write> {
 impl<W: Write> App<W> {
     pub fn new(db_path: &str, output: W) -> App<W> {
         App {
-            db_path: db_path.to_string(),
             db: db::conn(db_path).unwrap(),
             output: output,
         }
@@ -64,18 +62,18 @@ impl<W: Write> App<W> {
         let mut stmt = self
             .db
             .prepare("UPDATE todos set done = true where id = (?)")?;
-        stmt.execute(params![todo.id])?;
+        let n = stmt.execute(params![todo.id])?;
         todo.done = true;
-        Ok(1)
+        Ok(n)
     }
 
     pub fn incomplete_todo(&self, todo: &mut Todo) -> Result<usize> {
         let mut stmt = self
             .db
             .prepare("UPDATE todos set done = false where id = (?)")?;
-        stmt.execute(params![todo.id])?;
+        let n = stmt.execute(params![todo.id])?;
         todo.done = false;
-        Ok(1)
+        Ok(n)
     }
 }
 

@@ -1,5 +1,4 @@
 use super::*;
-mod db;
 
 #[test]
 fn test_todo_new() {

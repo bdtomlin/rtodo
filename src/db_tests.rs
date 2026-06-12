@@ -22,6 +22,6 @@ fn test_ensure_table() {
     );
     assert_eq!(
         conn.column_metadata(None, "todos", "done").unwrap(),
-        (Some(c"BOOLEAN"), Some(c"BINARY"), false, false, false)
+        (Some(c"BOOLEAN"), Some(c"BINARY"), true, false, false)
     );
 }
