@@ -13,7 +13,7 @@ fn app() -> App<Vec<u8>> {
 #[test]
 fn test_run_add() {
     let mut app = app();
-    run(&mut app, args(&["add", "buy milk"]));
+    run(&mut app, args(&["add", "buy milk"])).unwrap();
     app.get_todo(1).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
@@ -28,7 +28,7 @@ fn test_run_add_and_list() {
         .unwrap();
     app.add_todo(&mut Todo::new("walk dog".to_string()))
         .unwrap();
-    run(&mut app, args(&["list"]));
+    run(&mut app, args(&["list"])).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
         "id: 1, text: buy milk, done: false\nid: 2, text: walk dog, done: false\n".to_string()
@@ -42,7 +42,7 @@ fn test_run_count() {
         .unwrap();
     app.add_todo(&mut Todo::new("walk dog".to_string()))
         .unwrap();
-    run(&mut app, args(&["count"]));
+    run(&mut app, args(&["count"])).unwrap();
     assert_eq!(String::from_utf8(app.output).unwrap(), "2\n".to_string());
 }
 
@@ -51,7 +51,7 @@ fn test_run_get() {
     let mut app = app();
     app.add_todo(&mut Todo::new("buy milk".to_string()))
         .unwrap();
-    run(&mut app, args(&["get", "1"]));
+    run(&mut app, args(&["get", "1"])).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
         "id: 1, text: buy milk, done: false\n".to_string()
@@ -63,8 +63,8 @@ fn test_run_complete_and_incomplete() {
     let mut app = app();
     app.add_todo(&mut Todo::new("buy milk".to_string()))
         .unwrap();
-    run(&mut app, args(&["complete", "1"]));
-    run(&mut app, args(&["incomplete", "1"]));
+    run(&mut app, args(&["complete", "1"])).unwrap();
+    run(&mut app, args(&["incomplete", "1"])).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
         "Completed\nIncompleted\n".to_string()
@@ -76,8 +76,8 @@ fn test_run_delete() {
     let mut app = app();
     app.add_todo(&mut Todo::new("buy milk".to_string()))
         .unwrap();
-    run(&mut app, args(&["delete", "1"]));
-    run(&mut app, args(&["list"]));
+    run(&mut app, args(&["delete", "1"])).unwrap();
+    run(&mut app, args(&["list"])).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
         "Deleted\n".to_string()

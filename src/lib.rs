@@ -36,52 +36,43 @@ pub fn get_app<W: Write>(db_path: &str, output: W) -> app::App<W> {
     app::App::new(db_path, output)
 }
 
-/// Run rtodo. Currently passing in a writer for testing
-/// but consider using the assert_command crate for better cli testing
-pub fn run<W: Write>(app: &mut app::App<W>, args: Vec<String>) {
+pub fn run<W: Write>(app: &mut app::App<W>, args: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse_from(args);
 
     match &cli.commands {
         Commands::Add { todo } => {
             let mut todo = Todo::new(todo.to_string());
-            app.add_todo(&mut todo).unwrap();
-            writeln!(app.output, "{}", todo).unwrap();
+            app.add_todo(&mut todo)?;
+            writeln!(app.output, "{}", todo)?;
         }
-        Commands::List {} => {
-            for todo in app.list_todos().unwrap() {
-                writeln!(app.output, "{}", todo).unwrap();
+        Commands::List => {
+            for todo in app.list_todos()? {
+                writeln!(app.output, "{}", todo)?;
             }
         }
-        Commands::Count {} => {
-            let count = app.count_todos().unwrap();
-            writeln!(app.output, "{}", count).unwrap();
+        Commands::Count => {
+            writeln!(app.output, "{}", app.count_todos()?)?;
         }
         Commands::Get { id } => {
-            let t = app.get_todo(*id).unwrap();
-            writeln!(app.output, "{}", t).unwrap();
+            writeln!(app.output, "{}", app.get_todo(*id)?)?;
         }
-        Commands::Complete { id } => match app.get_todo(*id) {
-            Ok(mut t) => match app.complete_todo(&mut t) {
-                Ok(_) => writeln!(app.output, "Completed").unwrap(),
-                Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-            },
-            Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-        },
-        Commands::Incomplete { id } => match app.get_todo(*id) {
-            Ok(mut t) => match app.incomplete_todo(&mut t) {
-                Ok(_) => writeln!(app.output, "Incompleted").unwrap(),
-                Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-            },
-            Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-        },
-        Commands::Delete { id } => match app.get_todo(*id) {
-            Ok(mut t) => match app.delete_todo(&mut t) {
-                Ok(_) => writeln!(app.output, "Deleted").unwrap(),
-                Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-            },
-            Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
-        },
+        Commands::Complete { id } => {
+            let mut t = app.get_todo(*id)?;
+            app.complete_todo(&mut t)?;
+            writeln!(app.output, "Completed")?;
+        }
+        Commands::Incomplete { id } => {
+            let mut t = app.get_todo(*id)?;
+            app.incomplete_todo(&mut t)?;
+            writeln!(app.output, "Incompleted")?;
+        }
+        Commands::Delete { id } => {
+            let mut t = app.get_todo(*id)?;
+            app.delete_todo(&mut t)?;
+            writeln!(app.output, "Deleted")?;
+        }
     }
+    Ok(())
 }
 
 #[cfg(test)]
