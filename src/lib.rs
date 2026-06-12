@@ -1,31 +1,5 @@
 //! rtodo is a command line todo application
 //! Author: Bryan Tomlin
-//! # CLI Usage
-//! ```sh
-//! rtodo add "buy milk"
-//! ```
-//! ```sh
-//! rtodo list
-//! ```
-//! ```sh
-//! rtodo count
-//! ```
-//! ```sh
-//! rtodo get 1
-//! ```
-//! ```sh
-//! rtodo complete 1
-//! ```
-//! ```sh
-//! rtodo incomplete 1
-//! ```
-//! ```sh
-//! rtodo delete 1
-//! ```
-//! ```sh
-//! rtodo help
-//! ```
-//!
 use clap::{Parser, Subcommand};
 
 mod app;
@@ -39,14 +13,15 @@ struct Cli {
     #[command(subcommand)]
     commands: Commands,
 }
+
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Add a new todo
     Add { todo: String },
     /// List all todos
-    List {},
+    List,
     /// Count todos
-    Count {},
+    Count,
     /// Get a todo by id
     Get { id: i64 },
     /// Delete a todo by id
@@ -69,38 +44,38 @@ pub fn run<W: Write>(app: &mut app::App<W>, args: Vec<String>) {
     match &cli.commands {
         Commands::Add { todo } => {
             let mut todo = Todo::new(todo.to_string());
-            Todo::add(&app, &mut todo).unwrap();
+            app.add_todo(&mut todo).unwrap();
             writeln!(app.output, "{}", todo).unwrap();
         }
         Commands::List {} => {
-            for todo in Todo::list(&app).unwrap() {
+            for todo in app.list_todos().unwrap() {
                 writeln!(app.output, "{}", todo).unwrap();
             }
         }
         Commands::Count {} => {
-            let count = Todo::count(&app).unwrap();
+            let count = app.count_todos().unwrap();
             writeln!(app.output, "{}", count).unwrap();
         }
         Commands::Get { id } => {
-            let t = Todo::get(&app, *id).unwrap();
+            let t = app.get_todo(*id).unwrap();
             writeln!(app.output, "{}", t).unwrap();
         }
-        Commands::Complete { id } => match Todo::get(&app, *id) {
-            Ok(mut t) => match t.complete(&app) {
+        Commands::Complete { id } => match app.get_todo(*id) {
+            Ok(mut t) => match app.complete_todo(&mut t) {
                 Ok(_) => writeln!(app.output, "Completed").unwrap(),
                 Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
             },
             Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
         },
-        Commands::Incomplete { id } => match Todo::get(&app, *id) {
-            Ok(mut t) => match t.incomplete(&app) {
+        Commands::Incomplete { id } => match app.get_todo(*id) {
+            Ok(mut t) => match app.incomplete_todo(&mut t) {
                 Ok(_) => writeln!(app.output, "Incompleted").unwrap(),
                 Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
             },
             Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
         },
-        Commands::Delete { id } => match Todo::get(&app, *id) {
-            Ok(t) => match t.delete(&app) {
+        Commands::Delete { id } => match app.get_todo(*id) {
+            Ok(mut t) => match app.delete_todo(&mut t) {
                 Ok(_) => writeln!(app.output, "Deleted").unwrap(),
                 Err(e) => writeln!(app.output, "Error: {}", e).unwrap(),
             },

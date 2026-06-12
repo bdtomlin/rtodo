@@ -14,7 +14,7 @@ fn app() -> App<Vec<u8>> {
 fn test_run_add() {
     let mut app = app();
     run(&mut app, args(&["add", "buy milk"]));
-    Todo::get(&app, 1).unwrap();
+    app.get_todo(1).unwrap();
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
         "id: 1, text: buy milk, done: false\n".to_string()
@@ -24,8 +24,10 @@ fn test_run_add() {
 #[test]
 fn test_run_add_and_list() {
     let mut app = app();
-    Todo::add(&app, &mut Todo::new("buy milk".to_string())).unwrap();
-    Todo::add(&app, &mut Todo::new("walk dog".to_string())).unwrap();
+    app.add_todo(&mut Todo::new("buy milk".to_string()))
+        .unwrap();
+    app.add_todo(&mut Todo::new("walk dog".to_string()))
+        .unwrap();
     run(&mut app, args(&["list"]));
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
@@ -36,8 +38,10 @@ fn test_run_add_and_list() {
 #[test]
 fn test_run_count() {
     let mut app = app();
-    Todo::add(&app, &mut Todo::new("buy milk".to_string())).unwrap();
-    Todo::add(&app, &mut Todo::new("walk dog".to_string())).unwrap();
+    app.add_todo(&mut Todo::new("buy milk".to_string()))
+        .unwrap();
+    app.add_todo(&mut Todo::new("walk dog".to_string()))
+        .unwrap();
     run(&mut app, args(&["count"]));
     assert_eq!(String::from_utf8(app.output).unwrap(), "2\n".to_string());
 }
@@ -45,7 +49,8 @@ fn test_run_count() {
 #[test]
 fn test_run_get() {
     let mut app = app();
-    Todo::add(&app, &mut Todo::new("buy milk".to_string())).unwrap();
+    app.add_todo(&mut Todo::new("buy milk".to_string()))
+        .unwrap();
     run(&mut app, args(&["get", "1"]));
     assert_eq!(
         String::from_utf8(app.output).unwrap(),
@@ -56,7 +61,8 @@ fn test_run_get() {
 #[test]
 fn test_run_complete_and_incomplete() {
     let mut app = app();
-    Todo::add(&app, &mut Todo::new("buy milk".to_string())).unwrap();
+    app.add_todo(&mut Todo::new("buy milk".to_string()))
+        .unwrap();
     run(&mut app, args(&["complete", "1"]));
     run(&mut app, args(&["incomplete", "1"]));
     assert_eq!(
@@ -68,7 +74,8 @@ fn test_run_complete_and_incomplete() {
 #[test]
 fn test_run_delete() {
     let mut app = app();
-    Todo::add(&app, &mut Todo::new("buy milk".to_string())).unwrap();
+    app.add_todo(&mut Todo::new("buy milk".to_string()))
+        .unwrap();
     run(&mut app, args(&["delete", "1"]));
     run(&mut app, args(&["list"]));
     assert_eq!(
