@@ -15,7 +15,7 @@ fn ensure_table(conn: &Connection) -> Result<usize> {
             text TEXT NOT NULL,
             done BOOLEAN NOT NULL DEFAULT false
         )",
-        (), // empty list of parameters.
+        (),
     )
 }
 

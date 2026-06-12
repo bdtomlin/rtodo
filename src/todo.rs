@@ -1,4 +1,4 @@
-/// A sruct to represent a todo with id, text, and done
+/// A struct to represent a todo with id, text, and done
 pub struct Todo {
     pub id: i64,
     pub text: String,

@@ -29,7 +29,7 @@ impl<W: Write> App<W> {
             Ok(Todo {
                 id: row.get(0)?,
                 text: row.get(1)?,
-                done: row.get(2).unwrap_or(false),
+                done: row.get(2)?,
             })
         })?;
         Ok(todo)
@@ -41,10 +41,10 @@ impl<W: Write> App<W> {
             Ok(Todo {
                 id: row.get(0)?,
                 text: row.get(1)?,
-                done: row.get(2).unwrap_or(false),
+                done: row.get(2)?,
             })
         })?;
-        Ok(todos.collect::<Result<Vec<Todo>>>()?)
+        todos.collect::<Result<Vec<Todo>>>()
     }
 
     pub fn count_todos(&self) -> Result<i64> {
@@ -53,7 +53,7 @@ impl<W: Write> App<W> {
         Ok(count)
     }
 
-    pub fn delete_todo(&self, todo: &mut Todo) -> Result<usize> {
+    pub fn delete_todo(&self, todo: &Todo) -> Result<usize> {
         let mut stmt = self.db.prepare("DELETE FROM todos where id = (?)")?;
         stmt.execute(params![todo.id])
     }

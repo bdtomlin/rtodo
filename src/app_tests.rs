@@ -57,8 +57,8 @@ fn test_delete_todos() {
     app.add_todo(&mut Todo::new("example todo".to_string()))
         .unwrap();
     assert_eq!(app.count_todos().unwrap(), 1);
-    let mut todo = app.get_todo(1).unwrap();
-    app.delete_todo(&mut todo).unwrap();
+    let todo = app.get_todo(1).unwrap();
+    app.delete_todo(&todo).unwrap();
     assert_eq!(app.count_todos().unwrap(), 0);
 }
 
@@ -76,7 +76,7 @@ fn test_complete_todo() {
 }
 
 #[test]
-fn test_icomplete_todo() {
+fn test_incomplete_todo() {
     let app = App::new(":memory:", std::io::stdout());
 
     let mut todo = Todo::new("example todo".to_string());
