@@ -28,8 +28,8 @@
 //!
 use clap::{Parser, Subcommand};
 
-pub mod app;
-pub mod db;
+mod app;
+mod db;
 mod todo;
 use crate::todo::Todo;
 use std::io::Write;
